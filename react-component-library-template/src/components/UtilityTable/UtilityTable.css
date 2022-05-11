@@ -1,0 +1,330 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.hb_component {
+    /* display: table;
+
+    width: 100%;
+     overflow-x: auto; */
+    border: 1px solid #ddd;
+    position: relative;
+    font-size: 0.9rem;
+    display: grid;
+    margin-top: 5px;
+}
+
+.hb_component ::-webkit-scrollbar-track {
+    background: #f8f8f8;
+    box-shadow: inset 0 0 5px #f8f8f8;
+    -webkit-box-shadow: inset 0 0 5px #f8f8f8;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border: 1px solid #cbd5e1;
+}
+
+.hb_component ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px #cbd5e1;
+    -webkit-box-shadow: inset 0 0 5px #cbd5e1;
+    -webkit-border-radius: 10px;
+}
+
+.hb_component ::-webkit-scrollbar-corner {
+    background: #f8f8f8;
+}
+
+.hb_component ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+/* Toolbar */
+
+.h6-typo {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.0075em;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.crud-toolbar-action {
+    display: flex;
+    gap: .4rem;
+}
+
+
+/* #curd-body tr:hover {
+    background-color: #d9ebe9e8;
+} */
+
+.crud-disable {
+    opacity: .4;
+}
+
+
+/* Circular Loader  */
+
+.crud_loader {
+    border: 4px solid #ddd;
+    border-top: 4px solid #26c6da;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    animation: spin 1s linear infinite;
+    -webkit-animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+
+/* Crud Icon Button  */
+
+.crud-icon-button[data-title]:hover:after {
+    opacity: 1;
+    transition: all 0.1s ease 0.5s;
+    visibility: visible;
+}
+
+.crud-icon-button[data-title]:after {
+    content: attr(data-title);
+    opacity: 0.89;
+    background-color: #4a4747;
+    color: #fff;
+    /* font-size: 150%; */
+    position: absolute;
+    padding: 2px 5px;
+    bottom: -0.4em;
+    left: 100%;
+    white-space: nowrap;
+    /* box-shadow: 1px 1px 3px #222222; */
+    z-index: 1;
+    border-radius: 2px;
+    visibility: hidden;
+}
+
+.toolbar-icon[data-title]:after {
+    bottom: -1.3em !important;
+    left: -1.5rem !important;
+}
+
+.crud-icon-button {
+    position: relative;
+    align-items: center;
+    user-select: none;
+    cursor: pointer;
+    border: 0;
+    margin: 0;
+    padding: .5rem;
+    display: inline-flex;
+    outline: 0;
+    justify-content: center;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.crud-icon-button:hover {
+    background: #dce9e5;
+    border-radius: 100%;
+}
+
+
+/* Curd Table style is here  */
+
+.tableParent {
+    overflow-y: auto;
+    position: relative;
+}
+
+.crud-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.curd-body {
+    position: relative;
+}
+
+.crud-table-head {
+    background-color: #26c6da;
+    color: #fff;
+}
+
+.crud-row {
+    font-size: 0.875rem;
+    line-height: 1.57;
+    letter-spacing: 0.00714em;
+}
+
+.crud-table td,
+.crud-table th {
+    border: 1px solid #d9ebe9e8;
+    padding: 6px;
+}
+
+.crud-table-heading {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    /* background-color: #009688a6; */
+    /* color: #fff; */
+}
+
+.crud-table td input {
+    width: 80%;
+}
+
+.footer-caption {
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding: 0.3rem;
+    line-height: 1.66;
+    letter-spacing: 0.03333em;
+}
+
+.action-column {
+    width: 6rem;
+}
+
+.action-column-div {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.crud-table-footer {
+    width: inherit;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+}
+
+.crud-footer-content {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-right: .5rem;
+}
+
+.pagination {
+    font-size: 0.9rem;
+    line-height: 1.3125rem;
+    float: right;
+    overflow: auto;
+    color: #000000de;
+}
+
+.warning {
+    color: red;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.trans {
+    transition: all 300ms ease 0s;
+}
+
+.trans-opacity {
+    transition: all 300ms ease 0s;
+    opacity: 0.3;
+}
+
+
+/* Input Field Style */
+
+.icons-style {
+    color: #65819D;
+    overflow: hidden;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    user-select: none;
+    cursor: pointer;
+}
+
+.custom-field {
+    font-size: 14px;
+    position: relative;
+}
+
+.custom-field input {
+    border: none;
+    border-bottom: 1px solid #d5c6c6;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.custom-field input:focus-visible {
+    outline: none;
+}
+
+.custom-field input:focus+.placeholder {
+    top: -10px;
+    font-size: 10px;
+    color: #222;
+}
+
+.custom-field .placeholder {
+    position: absolute;
+    left: 12px;
+    bottom: 50%;
+    top: 22px;
+    transform: translateY(-50%);
+    color: #aaa;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: top 0.3s ease, color 0.3s ease, font-size 0.3s ease;
+}
+
+.custom-field input:not(:placeholder-shown)+.placeholder .custom-field input:focus+.placeholder {
+    top: -10px;
+    font-size: 10px;
+    color: #222;
+}
+
+@media screen and (min-width: 480px) {
+    body {
+        max-width: 100%;
+        padding: 10px;
+    }
+}
