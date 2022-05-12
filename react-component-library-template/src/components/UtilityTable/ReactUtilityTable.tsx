@@ -113,8 +113,8 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setShowLoader(true);
         if (deletingRow) {
 
-            if (editable.onRowDelete) {
-                editable.onRowDelete(userData[index]).then((resp: any) => {
+            if (editable && editable.onRowDelete) {
+                editable && editable.onRowDelete(userData[index]).then((resp: any) => {
                     setChecked([]);
                     setDeletingRow(false);
                     setShowLoader(false);
@@ -126,10 +126,10 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
             var identity = newData["index"];
             delete newData["index"];
-            if (editable.onRowUpdate) {
+            if (editable && editable.onRowUpdate) {
                 setTransClass("trans-opacity");
                 setChkEdit({ chk: false, ind: -1 });
-                editable.onRowUpdate(newData, userData[identity]).then((resp: any) => {
+                editable && editable.onRowUpdate(newData, userData[identity]).then((resp: any) => {
                     debugger;
                     setChecked([]);
                     setTransClass("trans");
@@ -143,8 +143,8 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setShowLoader(true);
         // var identity = newData["index"];
         delete newData["index"];
-        if (editable.onRowAdd) {
-            editable.onRowAdd(newData).then((resp: any) => {
+        if (editable && editable.onRowAdd) {
+            editable && editable.onRowAdd(newData).then((resp: any) => {
                 if (add) {
                     setTransClass("trans");
                     setAdd(false);
@@ -256,7 +256,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                 className="toolbar-icon" onClick={excelDownload} data-title="Excel" />
                             }
 
-                            {edit && editable.onRowAdd && <IconCrudButton iconName="icon-plus"
+                            {edit && editable && editable.onRowAdd && <IconCrudButton iconName="icon-plus"
                                 className="toolbar-icon" data-title="Add Row" onClick={addItem}
                             />}
 
@@ -326,7 +326,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                     if (chk) {
                                         return ite;
                                     }
-                                }).slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
+                                 }).slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
                                     <tr key={index} onClick={(e) => rowClick(e, item)}
                                         className={chkEdit.chk ? chkEdit.ind === item.tableData["id"] ?
                                             "crud-row trans" : "crud-row trans-opacity" : "crud-row " + transclass}>
@@ -339,25 +339,25 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                         {edit ? <td className="action-column">
 
                                             <div className="action-column-div">
-                                                {(editable.onRowUpdate && checked.indexOf(item.tableData["id"]) === -1) &&
+                                                {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) === -1) &&
                                                     <IconCrudButton iconName="icon-pencil"
                                                         onClick={() => enableEdit(item, item.tableData["id"])}
                                                         data-title="Edit Row" />
                                                 }
 
-                                                {(editable.onRowDelete && checked.indexOf(item.tableData["id"]) === -1) &&
+                                                {(editable && editable.onRowDelete && checked.indexOf(item.tableData["id"]) === -1) &&
                                                     <IconCrudButton iconName="icon-trash-solid"
                                                         onClick={() => deleteRow(item, item.tableData["id"])}
                                                         data-title="Delete Row"
                                                     />}
 
-                                                {(editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
+                                                {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
                                                     <IconCrudButton iconName="icon-check-icon" disabled={showLoader}
                                                         onClick={() => handleChangeSave(item.tableData["id"])} />
                                                 }
 
 
-                                                {(editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
+                                                {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
                                                     <IconCrudButton iconName="icon-clear" disabled={showLoader}
                                                         onClick={handleCancel} />
                                                 }
@@ -392,7 +392,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                             ))}
 
                                     </tr>
-                                )) : <tr  >
+                                 )) : <tr  >
                                     <td colSpan={columns && columns.length + 1} style={{ height: "11rem", textAlign: "center" }}>
                                         No records to display
                                     </td>

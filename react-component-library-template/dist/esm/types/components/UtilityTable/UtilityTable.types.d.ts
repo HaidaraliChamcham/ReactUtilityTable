@@ -43,7 +43,7 @@ export interface UtilityTableProps {
     onSelectionChange: (data: any, rowData?: object) => void;
     onRowClick?: (event?: React.MouseEvent, rowData?: object) => void;
     options?: Options<object>;
-    editable: {
+    editable?: {
         onRowAdd?: (newData: object) => Promise<any>;
         onRowUpdate?: (newData: object, oldData?: object) => Promise<any>;
         onRowDelete?: (oldData: object) => Promise<any>;
