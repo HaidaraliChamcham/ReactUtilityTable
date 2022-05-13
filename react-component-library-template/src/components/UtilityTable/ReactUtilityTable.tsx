@@ -9,7 +9,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
     const { columns, data, title, onRowClick, onSelectionChange, editable, tableId } = props;
     const { selection, filtering, action, showTotal, pageSize = 5, maxBodyHeight,
         minBodyHeight, paging = true, selectAll = true, selectionTitle = "Select All", exportButton = false,
-        headerStyle, toolbar = true } = {...props.options};
+        headerStyle, toolbar = true } = { ...props.options };
 
     const [edit] = useState(selection ? false : editable && true)
     const [userData, setUserData] = useState<any>([]);
@@ -77,14 +77,18 @@ function ReactUtilityTable(props: UtilityTableProps) {
         } else {
             newChecked.splice(currentIndex, 1);
         }
-        onSelectionChange(newChecked)
+        if (onSelectionChange) {
+            onSelectionChange(newChecked);
+        }
         setSelectedRow(newChecked);
     };
 
     const handleSelectedAll = (e: any) => {
         if (e.target.checked === true) {
             const allData = userData && userData.map((item: any, index: number) => item.tableData.id);
-            onSelectionChange(userData);
+            if (onSelectionChange) {
+                onSelectionChange(userData);
+            }
             setSelectedRow(userData);
         } else {
             setSelectedRow([])
@@ -238,7 +242,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setPagination({ start: start, end: end });
     }
 
-   
+
     return (
 
         <div className="hb_component">
@@ -268,7 +272,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                         : null
                     }
                     <div className="tableParent" style={{ maxHeight: maxBodyHeight, minHeight: minBodyHeight }}>
-                       
+
                         <table id={tableId} className="crud-table">
                             <thead>
                                 <tr>
@@ -303,7 +307,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                 </tr>
                                 }
 
-                                {data.length > 0 ? userData.filter((ite: any, i: number) => {
+                                {data && data.length > 0 ? userData.filter((ite: any, i: number) => {
                                     var chk = false;
                                     for (var _i of columns) {
                                         if (ite[_i['field']].toString().toLowerCase().includes(globalFilter.toLowerCase())) {
@@ -326,7 +330,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                     if (chk) {
                                         return ite;
                                     }
-                                 }).slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
+                                }).slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
                                     <tr key={index} onClick={(e) => rowClick(e, item)}
                                         className={chkEdit.chk ? chkEdit.ind === item.tableData["id"] ?
                                             "crud-row trans" : "crud-row trans-opacity" : "crud-row " + transclass}>
@@ -392,7 +396,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                             ))}
 
                                     </tr>
-                                 )) : <tr  >
+                                )) : <tr  >
                                     <td colSpan={columns && columns.length + 1} style={{ height: "11rem", textAlign: "center" }}>
                                         No records to display
                                     </td>
@@ -432,7 +436,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                             </tbody>
                         </table>
-                       
+
                     </div>
                 </div>
                 {paging && <table style={{ display: "flex", justifyContent: "end" }}>

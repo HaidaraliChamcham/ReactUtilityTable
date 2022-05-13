@@ -33,11 +33,11 @@ interface Column<RowData extends object> {
     type?: "string" | "boolean" | "numeric" | "number" | "date" | "datetime" | "time";
 }
 interface UtilityTableProps {
-    title: string;
+    title?: string;
     columns: Column<object>[];
     data: any;
     tableId?: any;
-    onSelectionChange: (data: any, rowData?: object) => void;
+    onSelectionChange?: (data: any, rowData?: object) => void;
     onRowClick?: (event?: React.MouseEvent, rowData?: object) => void;
     options?: Options<object>;
     editable?: {
