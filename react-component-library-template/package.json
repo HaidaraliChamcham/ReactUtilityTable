@@ -1,6 +1,6 @@
 {
     "name": "react-utility-table",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Data table for react js with crud operation and excel download feature",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
@@ -29,7 +29,7 @@
         "typescript": "^4.6.4"
     },
     "peerDependencies": {
-        "react": "^18.1.0"
+        "react": ">16.14.0 <=18.1.0"
     },
     "files": [
         "dist"
