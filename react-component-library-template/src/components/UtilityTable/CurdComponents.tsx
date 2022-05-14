@@ -29,11 +29,16 @@ function Crud_Loader() {
 
     return (
         <button
-            className={disabled ? buttonClass + className + " crud-disable" : buttonClass + className}
-            disabled={disabled}
-            {...otherProps}>
-            <i className={iconName + " icons-style"}></i>
-        </button>
+        className={disabled ? buttonClass + className + " crud-disable" : buttonClass + className}
+        disabled={disabled}
+        {...otherProps}>
+        
+        <i className="material-icons icons-style">
+            {iconName}
+        </i>
+       
+
+    </button>
     )
 }
 

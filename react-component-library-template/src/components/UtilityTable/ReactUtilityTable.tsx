@@ -13,16 +13,17 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
     const [edit] = useState(selection ? false : editable && true)
     const [userData, setUserData] = useState<any>([]);
+    const [showData, setShowData] = useState<any>([]);
     const [checked, setChecked] = useState<any>([]);
     const [newData, setNewData] = useState<any>([]);
     const [globalFilter, setGlobalFilter] = useState("");
-    const [filters, setFilters] = useState<any>([]);
+    const [filters, setFilters] = useState<any>("");
     const [add, setAdd] = useState(false);
     const [transclass, setTransClass] = useState("trans");
     const [chkEdit, setChkEdit] = useState({ chk: false, ind: -1 });
     const [selectedRow, setSelectedRow] = useState<any>([]);
     const [showLoader, setShowLoader] = useState<boolean>(false);
-    const [dataLength, setDataLength] = useState<number>(0);
+    // const [dataLength, setDataLength] = useState<number>(0);
     const [deletingRow, setDeletingRow] = useState(false);
     const [pagination, setPagination] = useState({
         start: 0,
@@ -34,6 +35,18 @@ function ReactUtilityTable(props: UtilityTableProps) {
         prev: true,
     });
 
+    const [disableLastEnd, setDisableLastEnd] = useState({
+        next: pageSize >= data.length ? true : false,
+        prev: true,
+    });
+    // const hanldeFiltering = useRef([]);
+
+
+    useEffect(() => {
+        debugger;
+        if (globalFilter || filters)
+            searchHandle()
+    }, [globalFilter, filters])
 
     useEffect(() => {
         settingColumn();
@@ -47,9 +60,12 @@ function ReactUtilityTable(props: UtilityTableProps) {
             // tableData.id is added to uniquely identify userData becuase of slice and filter method
             const copyData = data.map((item: any, index: number) => { return { ...item, tableData: { id: index } } });
             setUserData([...copyData]);
-            setDataLength(data.length);
+            setShowData([...copyData]);
+            // setDataLength(data.length);
         }
     }, [data])
+
+
 
     const rowClick = (e: any, item: any) => {
         if (onRowClick) {
@@ -65,9 +81,46 @@ function ReactUtilityTable(props: UtilityTableProps) {
             setFilters(obj);
         }
     }
+    const searchHandle = () => {
+        var filterValue = globalFilter.toLowerCase(), keyValue = "";
+        const handleFiltering = userData.filter((item: any, i: number) => {
+            var chk = false;
+            for (var _i of columns) {
+                keyValue = item[_i['field']].toString().toLowerCase();
+                if (keyValue.includes(filterValue)) {
+                    chk = true;
+                }
 
+            }
+            if (filtering) {
+                for (var _i of columns) {
+                    keyValue = item[_i['field']].toString().toLowerCase();
+                    if (!keyValue.includes(filters[_i['field']].toLowerCase())) {
+                        chk = false;
+                    }
+                }
+            }
+            if (chk) {
+                return item;
+            }
+        })
+
+        setShowData(handleFiltering);
+        if (pagination.start !== 0) {
+            setPagination({ start: 0, end: pageSize });
+        }
+
+        if (handleFiltering.length <= pagination.end) {
+            setDisableNext({ next: true, prev: true });
+        } else {
+            if (disableNext.next && disableNext.prev) {
+                setDisableNext({ next: false, prev: false });
+            }
+        }
+
+    }
     const handleSelectChange = (value: any) => () => {
-        debugger;
+
         // const currentIndex = selectedRow.indexOf(value);
 
         const currentIndex = selectedRow.findIndex((ind: any) => ind.tableData["id"] === value.tableData["id"]);
@@ -99,21 +152,19 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setNewData({ ...newData, [key]: value });
     }
 
-    const handleFilter = (e: any) => {
-        setFilters({ ...filters, [e.target.name]: e.target.value });
-    }
+
 
     const enableEdit = (item: any, index: number) => {
         if (!add) {
             setChkEdit({ chk: true, ind: index });
             setNewData({ ...item, index: index });
-            debugger;
+
             setChecked([item.tableData["id"]]);
         }
     }
 
     const handleChangeSave = (index: number) => {
-        debugger;
+
         setShowLoader(true);
         if (deletingRow) {
 
@@ -134,7 +185,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                 setTransClass("trans-opacity");
                 setChkEdit({ chk: false, ind: -1 });
                 editable && editable.onRowUpdate(newData, userData[identity]).then((resp: any) => {
-                    debugger;
+
                     setChecked([]);
                     setTransClass("trans");
                     setShowLoader(false);
@@ -150,6 +201,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
         if (editable && editable.onRowAdd) {
             editable && editable.onRowAdd(newData).then((resp: any) => {
                 if (add) {
+                    setPagination({ start: 0, end: pageSize });
                     setTransClass("trans");
                     setAdd(false);
                     setShowLoader(false);
@@ -169,7 +221,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
     }
 
     const addItem = () => {
-        var len = dataLength;
+        var len = userData.length;
         var obj = { tableData: { id: len }, index: len };
         // setUserData([...userData, obj]);
         if (!add) {
@@ -197,7 +249,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
     }
 
     const excelDownload = () => {
-        debugger;
+
         const excelData = userData.map((item: any) => {
             var ar = {} as any;
             for (var fieldName of columns) {
@@ -210,17 +262,18 @@ function ReactUtilityTable(props: UtilityTableProps) {
     }
 
     const onPaginationInc = () => {
+        debugger;
         var start = pagination.start + pageSize;
         var end = pagination.end + pageSize;
-        debugger;
-        if (end + 1 >= dataLength) {
-            end = dataLength;
+        if (end + 1 >= showData.length) {
+            end = showData.length;
             start = start;
             setDisableNext({ next: true, prev: false });
         }
-        if (disableNext.next && disableNext.prev) {
-            setDisableNext({ next: true, prev: false });
+        if (disableNext.next || disableNext.prev) {
+            setDisableNext({ next: false, prev: false });
         }
+
         setPagination({ start: start, end: end });
     }
 
@@ -233,7 +286,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
             setDisableNext({ next: false, prev: true });
         }
         if (end - start !== pageSize) {
-            debugger;
+
             end = start + pageSize;
         }
         if (disableNext.prev || disableNext.next) {
@@ -242,7 +295,28 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setPagination({ start: start, end: end });
     }
 
+    const handleGlobalFilter = (e: any) => {
+        setGlobalFilter(e.target.value);
 
+    }
+    const handleFilter = (e: any) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
+    }
+    const goToLast = () => {
+        var start = showData.length / pageSize, starting = parseInt(start.toString());
+        setPagination({ start: starting * pageSize, end: showData.length });
+        setDisableLastEnd({ next: true, prev: false });
+        setDisableNext({ next: true, prev: false });
+    }
+
+    const goToFirst = () => {
+        setPagination({ start: 0, end: pageSize });
+        setDisableLastEnd({ next: false, prev: true });
+        setDisableNext({ next: false, prev: true });
+    }
+   
+
+  
     return (
 
         <div className="hb_component">
@@ -254,13 +328,13 @@ function ReactUtilityTable(props: UtilityTableProps) {
                         </div>
                         <span className="crud-toolbar-action">
                             <CrudField type={'search'} placeholder={"SEARCH"} value={globalFilter}
-                                onChange={(e: any) => setGlobalFilter(e.target.value)} />
+                                onChange={(e: any) => handleGlobalFilter(e)} />
 
-                            {exportButton && <IconCrudButton iconName="icon-download"
+                            {exportButton && <IconCrudButton iconName="file_download"
                                 className="toolbar-icon" onClick={excelDownload} data-title="Excel" />
                             }
 
-                            {edit && editable && editable.onRowAdd && <IconCrudButton iconName="icon-plus"
+                            {edit && editable && editable.onRowAdd && <IconCrudButton iconName="add"
                                 className="toolbar-icon" data-title="Add Row" onClick={addItem}
                             />}
 
@@ -307,30 +381,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                 </tr>
                                 }
 
-                                {data && data.length > 0 ? userData.filter((ite: any, i: number) => {
-                                    var chk = false;
-                                    for (var _i of columns) {
-                                        if (ite[_i['field']].toString().toLowerCase().includes(globalFilter.toLowerCase())) {
-                                            chk = true;
-                                        }
-                                        // if (filtering) {
-                                        //     if (!ite[_i['field']].toString().toLowerCase().includes(filters[_i['field']])) {
-                                        //         chk = false;
-                                        //     }                                
-                                        // }
-                                    }
-
-                                    if (filtering) {
-                                        for (var _i of columns) {
-                                            if (!ite[_i['field']].toString().toLowerCase().includes(filters[_i['field']].toLowerCase())) {
-                                                chk = false;
-                                            }
-                                        }
-                                    }
-                                    if (chk) {
-                                        return ite;
-                                    }
-                                }).slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
+                                {data && data.length > 0 ? showData.slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
                                     <tr key={index} onClick={(e) => rowClick(e, item)}
                                         className={chkEdit.chk ? chkEdit.ind === item.tableData["id"] ?
                                             "crud-row trans" : "crud-row trans-opacity" : "crud-row " + transclass}>
@@ -344,25 +395,25 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                             <div className="action-column-div">
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) === -1) &&
-                                                    <IconCrudButton iconName="icon-pencil"
+                                                    <IconCrudButton iconName="edit"
                                                         onClick={() => enableEdit(item, item.tableData["id"])}
                                                         data-title="Edit Row" />
                                                 }
 
                                                 {(editable && editable.onRowDelete && checked.indexOf(item.tableData["id"]) === -1) &&
-                                                    <IconCrudButton iconName="icon-trash-solid"
+                                                    <IconCrudButton iconName="delete"
                                                         onClick={() => deleteRow(item, item.tableData["id"])}
                                                         data-title="Delete Row"
                                                     />}
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
-                                                    <IconCrudButton iconName="icon-check-icon" disabled={showLoader}
+                                                    <IconCrudButton iconName="done" disabled={showLoader}
                                                         onClick={() => handleChangeSave(item.tableData["id"])} />
                                                 }
 
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
-                                                    <IconCrudButton iconName="icon-clear" disabled={showLoader}
+                                                    <IconCrudButton iconName="close" disabled={showLoader}
                                                         onClick={handleCancel} />
                                                 }
 
@@ -406,11 +457,11 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                     <td className="action-column">
                                         {columns && <div className="action-column-div">
-                                            <IconCrudButton iconName="icon-check-icon"
+                                            <IconCrudButton iconName="done"
                                                 onClick={handleAddData} disabled={showLoader} />
 
 
-                                            <IconCrudButton iconName="icon-clear"
+                                            <IconCrudButton iconName="close"
                                                 onClick={handleCancelAdd} disabled={showLoader} />
 
                                         </div>
@@ -457,16 +508,29 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                             {pageSize + " rows"}
                                         </div>
                                         <div>
-                                            <IconCrudButton iconName="icon-left-arrow"
+                                            
+                                            <IconCrudButton iconName="first_page"
+                                                disabled={disableLastEnd.prev} onClick={goToFirst} />
+
+                                        </div>
+                                        <div>
+                                            <IconCrudButton iconName="chevron_left"
                                                 disabled={disableNext.prev} onClick={onPaginationDecre} />
 
                                         </div>
                                         <div className="footer-caption">
-                                            {pagination.start + 1 + " - " + pagination.end + " of " + userData.length}
+                                            {showData.length > pagination.end ? pagination.start + 1 + " - " + pagination.end + " of " + showData.length :
+                                                pagination.start + 1 + " - " + showData.length + " of " + showData.length}
                                         </div>
                                         <div>
-                                            <IconCrudButton iconName="icon-right-arrow"
+                                            <IconCrudButton iconName="chevron_right"
                                                 disabled={disableNext.next} onClick={onPaginationInc} />
+
+                                        </div>
+                                        <div>
+                                            <IconCrudButton iconName="last_page"
+                                          
+                                                disabled={disableLastEnd.next} onClick={goToLast} />
 
                                         </div>
                                     </div>
