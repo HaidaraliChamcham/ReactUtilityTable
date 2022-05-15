@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import './UtilityTable.css';
-import {Crud_Loader, CrudField, IconCrudButton} from "./CurdComponents";
+import {Crud_Loader, CrudField, IconCrudButton,
+    Close, Delete, Done, Download, Edit, FirstPage, LastPage, LeftArrow, Plus, RightArrow } from "./CurdComponents";
 import downloadExcel from "./ExcelDowload";
 import { UtilityTableProps } from "./UtilityTable.types";
-
+//import { Close, Delete, Done, Download, Edit, FirstPage, LastPage, LeftArrow, Plus, RightArrow } from "./Icons";
 
 function ReactUtilityTable(props: UtilityTableProps) {
     const { columns, data, title, onRowClick, onSelectionChange, editable, tableId } = props;
@@ -43,7 +44,6 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
 
     useEffect(() => {
-        debugger;
         if (globalFilter || filters)
             searchHandle()
     }, [globalFilter, filters])
@@ -262,7 +262,6 @@ function ReactUtilityTable(props: UtilityTableProps) {
     }
 
     const onPaginationInc = () => {
-        debugger;
         var start = pagination.start + pageSize;
         var end = pagination.end + pageSize;
         if (end + 1 >= showData.length) {
@@ -272,6 +271,11 @@ function ReactUtilityTable(props: UtilityTableProps) {
         }
         if (disableNext.next || disableNext.prev) {
             setDisableNext({ next: false, prev: false });
+        }
+        if(!disableNext.next){
+            if(disableLastEnd.prev){
+                setDisableLastEnd({ next: false, prev: false });
+            }
         }
 
         setPagination({ start: start, end: end });
@@ -330,11 +334,11 @@ function ReactUtilityTable(props: UtilityTableProps) {
                             <CrudField type={'search'} placeholder={"SEARCH"} value={globalFilter}
                                 onChange={(e: any) => handleGlobalFilter(e)} />
 
-                            {exportButton && <IconCrudButton iconName="file_download"
+                            {exportButton && <IconCrudButton iconName={<Download />}
                                 className="toolbar-icon" onClick={excelDownload} data-title="Excel" />
                             }
 
-                            {edit && editable && editable.onRowAdd && <IconCrudButton iconName="add"
+                            {edit && editable && editable.onRowAdd && <IconCrudButton iconName={<Plus />}
                                 className="toolbar-icon" data-title="Add Row" onClick={addItem}
                             />}
 
@@ -395,25 +399,25 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                             <div className="action-column-div">
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) === -1) &&
-                                                    <IconCrudButton iconName="edit"
+                                                    <IconCrudButton iconName={<Edit /> }
                                                         onClick={() => enableEdit(item, item.tableData["id"])}
                                                         data-title="Edit Row" />
                                                 }
 
                                                 {(editable && editable.onRowDelete && checked.indexOf(item.tableData["id"]) === -1) &&
-                                                    <IconCrudButton iconName="delete"
+                                                    <IconCrudButton iconName={<Delete />}
                                                         onClick={() => deleteRow(item, item.tableData["id"])}
                                                         data-title="Delete Row"
                                                     />}
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
-                                                    <IconCrudButton iconName="done" disabled={showLoader}
+                                                    <IconCrudButton iconName={<Done />} disabled={showLoader}
                                                         onClick={() => handleChangeSave(item.tableData["id"])} />
                                                 }
 
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
-                                                    <IconCrudButton iconName="close" disabled={showLoader}
+                                                    <IconCrudButton iconName={<Close />} disabled={showLoader}
                                                         onClick={handleCancel} />
                                                 }
 
@@ -457,11 +461,11 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                     <td className="action-column">
                                         {columns && <div className="action-column-div">
-                                            <IconCrudButton iconName="done"
+                                            <IconCrudButton iconName={<Done />}
                                                 onClick={handleAddData} disabled={showLoader} />
 
 
-                                            <IconCrudButton iconName="close"
+                                            <IconCrudButton iconName={<Close />}
                                                 onClick={handleCancelAdd} disabled={showLoader} />
 
                                         </div>
@@ -509,12 +513,12 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                         </div>
                                         <div>
                                             
-                                            <IconCrudButton iconName="first_page"
+                                            <IconCrudButton iconName={<FirstPage />}
                                                 disabled={disableLastEnd.prev} onClick={goToFirst} />
 
                                         </div>
                                         <div>
-                                            <IconCrudButton iconName="chevron_left"
+                                            <IconCrudButton iconName={<LeftArrow />}
                                                 disabled={disableNext.prev} onClick={onPaginationDecre} />
 
                                         </div>
@@ -523,12 +527,12 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                                 pagination.start + 1 + " - " + showData.length + " of " + showData.length}
                                         </div>
                                         <div>
-                                            <IconCrudButton iconName="chevron_right"
+                                            <IconCrudButton iconName={<RightArrow />}
                                                 disabled={disableNext.next} onClick={onPaginationInc} />
 
                                         </div>
                                         <div>
-                                            <IconCrudButton iconName="last_page"
+                                            <IconCrudButton iconName={<LastPage />}
                                           
                                                 disabled={disableLastEnd.next} onClick={goToLast} />
 
