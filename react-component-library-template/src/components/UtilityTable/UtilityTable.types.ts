@@ -14,6 +14,8 @@ export interface Options<RowData extends object> {
     paging?: boolean;
     maxBodyHeight?: string;
     minBodyHeight?: string;
+    totalTitle?: string;
+    totalRowClassName?: string;
 
 
 }
@@ -36,6 +38,7 @@ export interface Column<RowData extends object> {
     filtering?: boolean;
     field: keyof RowData | string;
     title: keyof RowData | string;
+    total?: string;
     render?: (data: object) => any;
     editable?: boolean;
     type?:
@@ -56,9 +59,9 @@ export interface Editable<RowData extends object> {
 }
 export interface UtilityTableProps {
     title?: string;
-    columns: Column<object>[];
-    data: any;
-    tableId ?: any;
+    columns?: Column<object>[];
+    data?: any;
+    tableId?: any;
     onSelectionChange?: (data: any, rowData?: object) => void;
     onRowClick?: (
         event?: React.MouseEvent,

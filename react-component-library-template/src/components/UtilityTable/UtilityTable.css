@@ -1,8 +1,4 @@
 .hb_component {
-    /* display: table;
-
-    width: 100%;
-     overflow-x: auto; */
     border: 1px solid #ddd;
     position: relative;
     font-size: 0.9rem;
@@ -39,7 +35,7 @@
 
 /* Toolbar */
 
-.h6-typo {
+.crud-component-h6 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -124,7 +120,7 @@
     visibility: hidden;
 }
 
-.toolbar-icon[data-title]:after {
+.crud-toolbar-icon[data-title]:after {
     bottom: -1.3em !important;
     left: -1.6rem !important;
 }
@@ -207,11 +203,11 @@
     letter-spacing: 0.03333em;
 }
 
-.action-column {
+.crud-action-column {
     width: 6rem;
 }
 
-.action-column-div {
+.crud-action-column-div {
     display: flex;
     justify-content: space-evenly;
 }
@@ -230,7 +226,7 @@
     margin-right: .5rem;
 }
 
-.pagination {
+.crud-pagination {
     font-size: 0.9rem;
     line-height: 1.3125rem;
     float: right;
@@ -238,30 +234,23 @@
     color: #000000de;
 }
 
-.warning {
+.crud-warning {
     color: red;
     font-size: 1rem;
     font-weight: 600;
 }
 
-.trans {
+.crud-trans {
     transition: all 300ms ease 0s;
 }
 
-.trans-opacity {
+.crud-trans-opacity {
     transition: all 300ms ease 0s;
     opacity: 0.3;
 }
 
 
 /* Input Field Style */
-
-.icons-style {
-    overflow: hidden;
-    flex-shrink: 0;
-    user-select: none;
-    cursor: pointer;
-}
 
 .crud-svg-icon {
     height: 24px;
@@ -273,12 +262,12 @@
     cursor: pointer;
 }
 
-.custom-field {
+.crud-custom-field {
     font-size: 14px;
     position: relative;
 }
 
-.custom-field input {
+.crud-custom-field input {
     border: none;
     border-bottom: 1px solid #d5c6c6;
     -webkit-appearance: none;
@@ -290,38 +279,6 @@
     font-size: 14px;
 }
 
-.custom-field input:focus-visible {
+.crud-custom-field input:focus-visible {
     outline: none;
-}
-
-.custom-field input:focus+.placeholder {
-    top: -10px;
-    font-size: 10px;
-    color: #222;
-}
-
-.custom-field .placeholder {
-    position: absolute;
-    left: 12px;
-    bottom: 50%;
-    top: 22px;
-    transform: translateY(-50%);
-    color: #aaa;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    transition: top 0.3s ease, color 0.3s ease, font-size 0.3s ease;
-}
-
-.custom-field input:not(:placeholder-shown)+.placeholder .custom-field input:focus+.placeholder {
-    top: -10px;
-    font-size: 10px;
-    color: #222;
-}
-
-@media screen and (min-width: 480px) {
-    body {
-        max-width: 100%;
-        padding: 10px;
-    }
 }

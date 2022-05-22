@@ -6,11 +6,12 @@ import downloadExcel from "./ExcelDowload";
 import { UtilityTableProps } from "./UtilityTable.types";
 //import { Close, Delete, Done, Download, Edit, FirstPage, LastPage, LeftArrow, Plus, RightArrow } from "./Icons";
 
+
 function ReactUtilityTable(props: UtilityTableProps) {
-    const { columns, data, title, onRowClick, onSelectionChange, editable, tableId } = props;
-    const { selection, filtering, action, showTotal, pageSize = 5, maxBodyHeight,
+    const { columns = [], data = [], title = "Table Title", onRowClick, onSelectionChange, editable, tableId } = props;
+    const { selection, filtering, action = "Action", showTotal, pageSize = 5, maxBodyHeight,
         minBodyHeight, paging = true, selectAll = true, selectionTitle = "Select All", exportButton = false,
-        headerStyle, toolbar = true } = { ...props.options };
+        headerStyle, toolbar = true, totalTitle = "Total", totalRowClassName } = { ...props.options };
 
     const [edit] = useState(selection ? false : editable && true)
     const [userData, setUserData] = useState<any>([]);
@@ -20,7 +21,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
     const [globalFilter, setGlobalFilter] = useState("");
     const [filters, setFilters] = useState<any>("");
     const [add, setAdd] = useState(false);
-    const [transclass, setTransClass] = useState("trans");
+    const [transclass, setTransClass] = useState("crud-trans");
     const [chkEdit, setChkEdit] = useState({ chk: false, ind: -1 });
     const [selectedRow, setSelectedRow] = useState<any>([]);
     const [showLoader, setShowLoader] = useState<boolean>(false);
@@ -50,6 +51,12 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
     useEffect(() => {
         settingColumn();
+        if (showTotal) {
+            setPagination({
+                start: 0,
+                end: data.length
+            })
+        }
         //for bulk edit
         // setNewData([...copyData]);
 
@@ -182,12 +189,12 @@ function ReactUtilityTable(props: UtilityTableProps) {
             var identity = newData["index"];
             delete newData["index"];
             if (editable && editable.onRowUpdate) {
-                setTransClass("trans-opacity");
+                setTransClass("crud-trans-opacity");
                 setChkEdit({ chk: false, ind: -1 });
                 editable && editable.onRowUpdate(newData, userData[identity]).then((resp: any) => {
 
                     setChecked([]);
-                    setTransClass("trans");
+                    setTransClass("crud-trans");
                     setShowLoader(false);
                 })
             }
@@ -202,7 +209,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
             editable && editable.onRowAdd(newData).then((resp: any) => {
                 if (add) {
                     setPagination({ start: 0, end: pageSize });
-                    setTransClass("trans");
+                    setTransClass("crud-trans");
                     setAdd(false);
                     setShowLoader(false);
                 }
@@ -227,7 +234,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
         if (!add) {
             setNewData({ ...filters, ...obj })
             setAdd(true);
-            setTransClass("trans-opacity")
+            setTransClass("crud-trans-opacity")
             setChecked([]);
         }
     }
@@ -235,7 +242,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
     const handleCancelAdd = () => {
         setNewData({});
         setAdd(false);
-        setTransClass("trans");
+        setTransClass("crud-trans");
         setChkEdit({ chk: false, ind: -1 });
     }
 
@@ -272,8 +279,8 @@ function ReactUtilityTable(props: UtilityTableProps) {
         if (disableNext.next || disableNext.prev) {
             setDisableNext({ next: false, prev: false });
         }
-        if(!disableNext.next){
-            if(disableLastEnd.prev){
+        if (!disableNext.next) {
+            if (disableLastEnd.prev) {
                 setDisableLastEnd({ next: false, prev: false });
             }
         }
@@ -307,10 +314,17 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setFilters({ ...filters, [e.target.name]: e.target.value });
     }
     const goToLast = () => {
-        var start = showData.length / pageSize, starting = parseInt(start.toString());
-        setPagination({ start: starting * pageSize, end: showData.length });
-        setDisableLastEnd({ next: true, prev: false });
-        setDisableNext({ next: true, prev: false });
+        if (showData.length > 0) {
+            var start = showData.length / pageSize,
+                // starting = parseInt(start.toString());
+                starting = start.toString().split("."),
+                startIndex = starting[1] ? starting[0] : +starting[0] - 1;
+            setPagination({ start: +startIndex * pageSize, end: showData.length });
+            setDisableLastEnd({ next: true, prev: false });
+            setDisableNext({ next: true, prev: false });
+        } else {
+            setDisableNext({ next: true, prev: false });
+        }
     }
 
     const goToFirst = () => {
@@ -318,9 +332,9 @@ function ReactUtilityTable(props: UtilityTableProps) {
         setDisableLastEnd({ next: false, prev: true });
         setDisableNext({ next: false, prev: true });
     }
-   
 
-  
+
+
     return (
 
         <div className="hb_component">
@@ -328,18 +342,18 @@ function ReactUtilityTable(props: UtilityTableProps) {
                 <div>
                     {toolbar && <div className="crud-table-heading">
                         <div style={{ overflow: "hidden" }}>
-                            <h6 className="h6-typo">{selectedRow.length > 0 ? selectedRow.length + " rows selected" : title}</h6>
+                            <h6 className="crud-component-h6">{selectedRow.length > 0 ? selectedRow.length + " rows selected" : title}</h6>
                         </div>
                         <span className="crud-toolbar-action">
                             <CrudField type={'search'} placeholder={"SEARCH"} value={globalFilter}
                                 onChange={(e: any) => handleGlobalFilter(e)} />
 
                             {exportButton && <IconCrudButton iconName={<Download />}
-                                className="toolbar-icon" onClick={excelDownload} data-title="Excel" />
+                                className="crud-toolbar-icon" onClick={excelDownload} data-title="Excel" />
                             }
 
                             {edit && editable && editable.onRowAdd && <IconCrudButton iconName={<Plus />}
-                                className="toolbar-icon" data-title="Add Row" onClick={addItem}
+                                className="crud-toolbar-icon" data-title="Add Row" onClick={addItem}
                             />}
 
                         </span>
@@ -355,7 +369,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                             <thead>
                                 <tr>
                                     {selection ? <th className="crud-table-head" style={headerStyle}>
-                                        {selectAll && <input type="checkbox" onChange={(e: any) => handleSelectedAll(e)} checked={selectedRow.length === data.length ? true : false} />} {selectionTitle}
+                                        {selectAll && <input type="checkbox" onChange={(e: any) => handleSelectedAll(e)} checked={data.length > 0 ? selectedRow.length === data.length ? true : false : false} />} {selectionTitle}
                                     </th> : null}
 
                                     {edit ? <th className="crud-table-head" style={headerStyle}>
@@ -385,21 +399,21 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                 </tr>
                                 }
 
-                                {data && data.length > 0 ? showData.slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
+                                {data && showData.length > 0 && columns.length > 0 ? showData.slice(pagination.start, pagination.end).map((item: any, index: number, userArray: any) => (
                                     <tr key={index} onClick={(e) => rowClick(e, item)}
                                         className={chkEdit.chk ? chkEdit.ind === item.tableData["id"] ?
-                                            "crud-row trans" : "crud-row trans-opacity" : "crud-row " + transclass}>
+                                            "crud-row crud-trans" : "crud-row crud-trans-opacity" : "crud-row " + transclass}>
 
-                                        {selection ? <td>
+                                        {selection ? <td className="crud-action-column">
                                             <input type="checkbox" checked={selectedRow.findIndex((ind: any) => ind.tableData["id"] === item.tableData["id"]) === -1 ? false : true}
                                                 onChange={handleSelectChange(item)} />
                                         </td> : null}
 
-                                        {edit ? <td className="action-column">
+                                        {edit ? <td className="crud-action-column">
 
-                                            <div className="action-column-div">
+                                            <div className="crud-action-column-div">
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) === -1) &&
-                                                    <IconCrudButton iconName={<Edit /> }
+                                                    <IconCrudButton iconName={<Edit />}
                                                         onClick={() => enableEdit(item, item.tableData["id"])}
                                                         data-title="Edit Row" />
                                                 }
@@ -412,12 +426,14 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
                                                     <IconCrudButton iconName={<Done />} disabled={showLoader}
+                                                        data-title="Save"
                                                         onClick={() => handleChangeSave(item.tableData["id"])} />
                                                 }
 
 
                                                 {(editable && editable.onRowUpdate && checked.indexOf(item.tableData["id"]) !== -1) &&
                                                     <IconCrudButton iconName={<Close />} disabled={showLoader}
+                                                        data-title="Cancel"
                                                         onClick={handleCancel} />
                                                 }
 
@@ -427,8 +443,8 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
 
                                         {edit ? deletingRow && checked.indexOf(item.tableData["id"]) !== -1 ?
-                                            <td colSpan={columns.length} className="trans">
-                                                <span className="warning">Are you sure you want to delete this row </span></td> :
+                                            <td colSpan={columns.length} className="crud-trans">
+                                                <span className="crud-warning">Are you sure you want to delete this row </span></td> :
                                             columns.map((columnItem: any, columnIndex: number) => (
                                                 <td key={columnIndex} style={columnItem.cellStyle}>
                                                     {checked.indexOf(item.tableData["id"]) !== -1 ? columnItem["editable"] === false ?
@@ -459,13 +475,14 @@ function ReactUtilityTable(props: UtilityTableProps) {
 
                                 {add && <tr className="crud-row">
 
-                                    <td className="action-column">
-                                        {columns && <div className="action-column-div">
+                                    <td className="crud-action-column">
+                                        {columns && <div className="crud-action-column-div">
                                             <IconCrudButton iconName={<Done />}
-                                                onClick={handleAddData} disabled={showLoader} />
+                                                onClick={handleAddData} disabled={showLoader} data-title="Save" />
 
 
                                             <IconCrudButton iconName={<Close />}
+                                                data-title="Cancel"
                                                 onClick={handleCancelAdd} disabled={showLoader} />
 
                                         </div>
@@ -473,7 +490,7 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                     </td>
 
                                     {columns && columns.map((columnItem: any, columnIndex: number) => (
-                                        <td key={columnIndex} className="trans">
+                                        <td key={columnIndex} className="crud-trans">
                                             {!columnItem.editComponent ? <CrudField
                                                 onChange={(e: any) => handleChange(e.target.value, columnItem.field)}
                                                 type={!columnItem.type ? 'text' : columnItem.type}
@@ -490,56 +507,75 @@ function ReactUtilityTable(props: UtilityTableProps) {
                                 }
 
                             </tbody>
+                            {showTotal && <tfoot>
+                                <tr className={totalRowClassName && totalRowClassName}>{editable || selection ?
+                                    <>
+                                        <td>
+                                            {totalTitle}
+                                        </td>
+                                        {[0].map((it: number) => (
+                                            columns.map((item: any, index: number) => (
+                                                <td key={index}>
+                                                    {item.total ? item.total : ""}
+                                                </td>
+                                            ))
+                                        ))}
+                                    </>
+                                    :
+                                    [0].map((it: number) => (
+                                        columns.map((item: any, index: number) => (
+                                            <td key={index}>
+                                                {index === 0 ? totalTitle : item.total ? item.total : ""}
+                                            </td>
+                                        ))
+                                    ))
+                                }
+
+                                </tr>
+
+                            </tfoot>
+                            }
                         </table>
 
                     </div>
                 </div>
-                {paging && <table style={{ display: "flex", justifyContent: "end" }}>
+                {paging && !showTotal && <table style={{ display: "flex", justifyContent: "end" }}>
                     <tfoot className="crud-table-footer">
-                        {showTotal ? <tr>{selection && <td>Total</td> || edit && <td>Total</td>}
-                            {[0].map((it: number) => (
-                                columns.map((item: any, index: number) => (
-                                    <td key={index}>
-                                        {item.type === "number" ? "sum total" : ""}
-                                    </td>
-                                ))
-                            ))}
-                        </tr>
-                            : <tr>
-                                <td className="pagination">
-                                    <div className="crud-footer-content" >
-                                        <div className="footer-caption">
-                                            {pageSize + " rows"}
-                                        </div>
-                                        <div>
-                                            
-                                            <IconCrudButton iconName={<FirstPage />}
-                                                disabled={disableLastEnd.prev} onClick={goToFirst} />
-
-                                        </div>
-                                        <div>
-                                            <IconCrudButton iconName={<LeftArrow />}
-                                                disabled={disableNext.prev} onClick={onPaginationDecre} />
-
-                                        </div>
-                                        <div className="footer-caption">
-                                            {showData.length > pagination.end ? pagination.start + 1 + " - " + pagination.end + " of " + showData.length :
-                                                pagination.start + 1 + " - " + showData.length + " of " + showData.length}
-                                        </div>
-                                        <div>
-                                            <IconCrudButton iconName={<RightArrow />}
-                                                disabled={disableNext.next} onClick={onPaginationInc} />
-
-                                        </div>
-                                        <div>
-                                            <IconCrudButton iconName={<LastPage />}
-                                          
-                                                disabled={disableLastEnd.next} onClick={goToLast} />
-
-                                        </div>
+                        <tr>
+                            <td className="crud-pagination">
+                                <div className="crud-footer-content" >
+                                    <div className="footer-caption">
+                                        {pageSize + " rows"}
                                     </div>
-                                </td>
-                            </tr>}
+                                    <div>
+
+                                        <IconCrudButton iconName={<FirstPage />}
+                                            disabled={disableLastEnd.prev} onClick={goToFirst} />
+
+                                    </div>
+                                    <div>
+                                        <IconCrudButton iconName={<LeftArrow />}
+                                            disabled={disableNext.prev} onClick={onPaginationDecre} />
+
+                                    </div>
+                                    <div className="footer-caption">
+                                        {showData.length > 0 ? showData.length > pagination.end ? pagination.start + 1 + " - " + pagination.end + " of " + showData.length :
+                                            pagination.start + 1 + " - " + showData.length + " of " + showData.length : pagination.start + " - " + showData.length + " of " + showData.length}
+                                    </div>
+                                    <div>
+                                        <IconCrudButton iconName={<RightArrow />}
+                                            disabled={disableNext.next} onClick={onPaginationInc} />
+
+                                    </div>
+                                    <div>
+                                        <IconCrudButton iconName={<LastPage />}
+
+                                            disabled={disableLastEnd.next} onClick={goToLast} />
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     </tfoot>
                 </table>
                 }
